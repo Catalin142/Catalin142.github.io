@@ -1,1 +1,147 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catalin Popa</title>
+  <style>
+    :root {
+      --bg: rgb(16, 16, 16);
+      --fg: #eaeaea;
+      --muted: #b0b0b0;
+      --line: #444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    nav {
+      margin-top: 6px;
+      font-size: 16px;
+    }
+
+    nav a {
+      color: var(--fg);
+      text-decoration: none;
+      margin: 0 6px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px solid var(--line);
+      margin: 20px 0;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      letter-spacing: 1px;
+      margin: 0 0 2px 0;
+    }
+
+    .section hr {
+        margin: 2px 0 8px 0;
+    }
+
+    .section-content {
+      margin-top: 3px;
+      color: var(--fg);
+    }
+
+    .posts {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 20px;
+      row-gap: 2px;
+    }
+
+    .date {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .title {
+      color: var(--fg);
+    }
+
+    footer {
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>CATALIN POPA</h1>
+    </header>
+
+    <br>
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <h2 class="section-title">ABOUT</h2>
+      <hr />
+      <div class="section-content">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      </div>
+    </section>
+
+    <!-- POSTS -->
+    <section id="posts" class="section">
+      <h2 class="section-title">POSTS</h2>
+      <hr />
+      <div class="section-content posts">
+        <div class="date">2025-04-10</div><div class="title">Post 1</div>
+        <div class="date">2025-04-10</div><div class="title">Post 2</div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+      <h2 class="section-title">CONTACT</h2>
+      <hr />
+      <div class="section-content">
+        Email: popac414@gmail.com<br />
+        GitHub: github.com/Catalin142<br />
+      </div>
+    </section>
+
+    <footer>
+      <hr />
+    </footer>
+  </div>
+</body>
+</html>
