@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Catalin Popa</title>
+  <style>
+    :root {
+      --bg: #1e1e1e;
+      --fg: #eaeaea;
+      --muted: #b0b0b0;
+      --line: #555;
+      --link: #4da6ff;
+      --link-hover: #80c1ff;
+      --code-bg: #2b2b2b;
+      --code-fg: #dcdcdc;
+      --code-border: #444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 16px 0;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      letter-spacing: 1px;
+      margin: 0 0 2px 0;
+    }
+
+    .subsection-title {
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin: 0 0 2px 0;
+    }
+
+    .section hr {
+      margin: 2px 0 6px 0;
+    }
+
+    .section-content {
+      font-size: 15px;
+      margin-top: 2px;
+      color: var(--fg);
+    }
+
+    h3 {
+      font-size: 14px;
+      margin: 10px 0 4px 0;
+    }
+
+    h4 {
+      font-size: 13px;
+      margin: 8px 0 2px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 4px 0;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .link-article {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    .link-article:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    .homepage {
+      color: white;
+      text-decoration: none;
+    }
+
+    .homepage:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-fg);
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--code-border);
+      overflow-x: auto;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
+      margin: 8px 0;
+    }
+
+    pre code {
+      display: block;
+      white-space: pre;
+    }
+
+    .language-cpp {
+      color: #79c0ff;
+    }
+
+    .language-glsl {
+      color: #ffcb6b;
+    }
+
+    .comment {
+      color: #6a9955;
+      font-style: italic;
+    }
+
+    .keyword {
+      color: #c792ea;
+      font-weight: bold;
+    }
+
+    .number {
+      color: #f07178;
+    }
+
+    .string {
+      color: #addb67;
+    }
+
+    .highlight {
+      color: #ffa348;
+      font-weight: bold;
+    }
+
+    .bad-highlight {
+      color: #d9544d;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1><a class="homepage" href="../../index.html">CATALIN POPA</a></h1>
+    </header>
+    <br><br><br>
+
+    <section id="context" class="section">
+      <h2 class="section-title">CONTEXT</h2>
+      <hr />
+      <div class="section-content">
+        <p>
+          I wanted to implement mouse picking in my <span class="highlight">3D Point & Click game</span>, which is
+          written in C++ and Vulkan, for a
+          while,
+          to start building a small prototype, but noticed that I don't have a scene
+          structure to work with. So I decided to build a ECS (Entity Component System)
+          and a full on scene management system, so this got delayed a bit.
+        </p>
+        <p>But now it's <span class="highlight">finally done</span>, let's check it out!</p>
+      </div>
+    </section>
+    <br>
+    <section id="decision" class="section">
+      <h2 class="section-title">DECISION</h2>
+      <hr />
+      <div class="section-content">
+        <p>
+          First I had to decide which is the best method for my use case, let's go over them and check cons/pros.
+        </p>
+        <br>
+        <h3>1. Ray Casting</h3>
+        <p>
+          There are lots of articles around implementing this method.
+          The idea is that you <span class="highlight">cast a ray</span> from your mouse through the scene
+          and <span class="highlight">check for intersections</span> with all the entities in there.
+        </p>
+        <br>
+
+        <h4>Pros:</h4>
+        <ul>
+          <li>You <span class="highlight">detect everything</span> the ray intersects with.</li>
+          <li><span class="highlight">Good with transparent objects</span>, if you want to pick something through a
+            window for example.</li>
+        </ul>
+        <br>
+
+        <h4>Cons:</h4>
+        <ul>
+          <li><span class="bad-highlight">Computationally expensive</span>, especially if you have a lot of entities in
+            your
+            scene.</li>
+          <li>You need to have a way to detect collision for all your entities, which is kinda overkill for a Point &
+            Click game.</li>
+          <li>Mathematically complex. Maybe a pro for some, but I suck at maths.</li>
+        </ul>
+
+        <br>
+        <h4>Some articles about the topic:</h4>
+        <ul class="links">
+          <li><a class="link-article"
+              href="https://antongerdelan.net/opengl/raycasting.html">https://antongerdelan.net/opengl/raycasting.html</a>
+          </li>
+          <li><a class="link-article"
+              href="https://medium.com/@logandvllrd/how-to-pick-a-3d-object-using-raycasting-in-c-39112aed1987">https://medium.com/@logandvllrd/how-to-pick-a-3d-object-using-raycasting-in-c-39112aed1987</a>
+          </li>
+        </ul>
+
+        <br>
+        <h3>2. ID Texture</h3>
+        <p>
+          Conceptually so much simpler and intuitive, you <span class="highlight">render each entity ID</span> to a 16
+          or 32 bit <span class="highlight">texture</span>, where <span class="highlight"></span>each
+          pixel is the ID</span> of the entity rendered there.
+          Then, when you click the mouse, you <span class="highlight">fetch the value</span> of the pixel under the
+          mouse, and that's it, you have the
+          ID of the entity clicked.
+        </p>
+
+        <br>
+        <h4>Pros:</h4>
+        <ul>
+          <li><span class="highlight">Easier</span> to implement.</li>
+          <li><span class="highlight">Fast</span>.</li>
+          <li><span class="highlight">Almost free</span>, computationally.</li>
+        </ul>
+
+        <br>
+        <h4>Cons:</h4>
+        <ul>
+          <li>Doesn't work well with <span class="bad-highlight">transparent objects</span>.</li>
+          <li>Needs a separate image in the framebuffer.</li>
+        </ul>
+
+        <br>
+        <p>It's plain to see that the <span class="highlight">second method</span> is much more suitable for my use
+          case.</p>
+        <br>
+        <h2 class="section-title">IMPLEMENTATION</h2>
+        <hr />
+        <p>Let's walk through the steps and the problems I encountered.</p>
+
+        <h2 class="subsection-title">-> Writing the IDs</h2>
+
+        <p>First step (starting strong here): <span class="highlight">How</span> do I get all the IDs to the <span
+            class="highlight">GPU</span>?? I can attach them <span class="highlight">per
+            vertex</span>, and the <span class="highlight">mesh vertex buffer</span> would be filled by:</p>
+
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(244, 112, 103);">struct</span> <span style="color: rgb(220, 189, 251);">MeshVertexData</span> { 
+  glm::vec4 VertexPosition; 	<span style="color: rgb(118, 131, 144);">// 4 * 4 bytes = 16</span>
+  glm::vec4 Normal; 	        <span style="color: rgb(118, 131, 144);">// 16 bytes </span>
+  glm::vec4 Tangent; 		<span style="color: rgb(118, 131, 144);">// 16 bytes </span>
+  glm::vec4 Bitangent; 		<span style="color: rgb(118, 131, 144);">// 16 bytes </span>
+
+  glm::vec2 TexCoordinate; 	<span style="color: rgb(118, 131, 144);">// 8 bytes </span>
+
+  <span style="color: rgb(244, 112, 103);">uint32_t</span> EntityID; 		<span style="color: rgb(118, 131, 144);">// 4 bytes </span>
+};
+</code></pre>
+
+        <p>
+          This is stored for every(<span class="bad-highlight">!!</span>) vertex in the mesh, and it takes around <span
+            class="highlight">76 bytes per
+            vertex</span>.
+        </p>
+
+        <p>
+          If a mesh has <span class="highlight">64k vertices</span>, that's <span class="bad-highlight">4.865MB</span>
+          of
+          data just for the IDs, which is a lot.
+        </p>
+
+        <p>
+          Let's for the moment ignore this, now I still have to use <span class="bad-highlight">a separate vertex
+            buffer</span> for each distinct entity
+          that
+          uses this specific mesh, so
+          instead of using those
+          <span class="bad-highlight">4.865MB for each mesh</span>, I use it for <span class="bad-highlight">each
+            entity</span>
+          even if they use the <span class="bad-highlight">same mesh</span>. This is enough of a reason
+          for me.
+        </p>
+
+        <p>
+          So no, let's think of another way:
+        </p>
+        <p>
+          What if I have a <span class="highlight">Vulkan dynamic storage buffer</span> that contains all the IDs in the
+          order the entities were
+          rendered, and fetch it in the fragment shader? </p>
+        <p>
+          The good thing about Dynamic Buffers is that I <span class="highlight">bind the whole buffer on the descriptor
+            set</span> and then I can
+          <span class="highlight">offset</span> into it when binding it for drawing.
+        </p>
+
+        <p>Let's go through the steps of using dynamic storage buffers:</p>
+
+        <p>1. Create the storage buffer:</p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);">VkBufferCreateInfo bufferInfo{};
+bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+bufferInfo.size        = <span style="color: rgb(246, 157, 80);">sizeof</span>(<span style="color: rgb(244, 112, 103);">uint32_t</span>) * MAX_ENTITIES;
+bufferInfo.usage       = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;</code></pre>
+        <p>And make it <span class="highlight">VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</span> | <span
+            class="highlight">VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</span>.</p>
+
+        <p>2. Bind it to the descriptor set using <span
+            class="highlight">VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC</span></p>
+
+        <p>3. <span class="highlight">Fill it</span> up with the ID of each entity while drawing:</p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(244, 112, 103);">for</span> (<span style="color: rgb(244, 112, 103);">const</span> RenderData&amp; rd : renderQueue)
+{
+  ...
+  m_RenderedIDs.<span style="color: rgb(246, 157, 80);">push_back</span>(rd.entityID);
+  ...
+}</code></pre>
+
+        <p>4. And when binding the descriptor set, <span class="highlight">pass the offset</span> of the entity ID in
+          the Dynamic Buffer:</p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(244, 112, 103);">for</span> (<span style="color: rgb(244, 112, 103);">const</span> RenderData&amp; rd : renderQueue)
+{
+  ...
+  <span style="color: rgb(244, 112, 103);">uint32_t</span> dynamicOffset = m_RenderedMeshes++ * <span style="color: rgb(246, 157, 80);">sizeof</span>(<span style="color: rgb(244, 112, 103);">uint32_t</span>);
+  ...
+
+  <span style="color: rgb(246, 157, 80);">vkCmdBindDescriptorSets</span>(vkCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+              m_3DRenderPass.Pipeline-&gt;<span style="color: rgb(246, 157, 80);">getVkPipelineLayout</span>(), <span style="color: rgb(108, 182, 255);">0</span>,
+              rd.descriptorSet-&gt;<span style="color: rgb(246, 157, 80);">getNumberOfSets</span>(), vkDescSets.<span style="color: rgb(246, 157, 80);">data</span>(), <span style="color: rgb(108, 182, 255);">1</span>, &amp;dynamicOffset);
+  ...
+}</code></pre>
+
+        <p>5. The last thing to do is to define it in the <span class="highlight">fragment shader</span> and write it:
+        </p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(246, 157, 80);">layout</span>(location = <span style="color: rgb(108, 182, 255);">1</span>) out uint out_ID;
+
+<span style="color: rgb(246, 157, 80);">layout</span> (set = <span style="color: rgb(108, 182, 255);">2</span>, binding = <span style="color: rgb(108, 182, 255);">1</span>) buffer readonly EntityParameters_dynamic
+{
+    uint ID;
+} Entity;
+
+<span><span style="color: rgb(244, 112, 103);">void</span> <span style="color: rgb(220, 189, 251);">main</span><span>()</span>
+</span>{
+  ...
+  out_ID = Entity.ID;
+  ...
+}</code></pre>
+
+        <p>Now the offscreen texture would look something like: </p>
+        <img src="res/RenderedIDs.png" alt="ID Texture Example" style="max-width:100%;height:auto;" />
+        <p>(I used each ID to generate a random color!!)</p>
+
+        <h2 class="subsection-title">-> Reading the ID</h2>
+        <p>Now I just need to read the ID from the buffer:</p>
+        <p>But wait, how? The actual reading is easy, just <span class="highlight">copy</span> that pixel from Image to
+          a <span class="highlight">CPU-GPU Buffer</span> and fetch it
+          from there:</p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);">VkBufferImageCopy region = {
+    .bufferOffset = <span style="color: rgb(108, 182, 255);">0</span>,
+    .bufferRowLength = <span style="color: rgb(108, 182, 255);">0</span>, 
+    .bufferImageHeight = <span style="color: rgb(108, 182, 255);">0</span>,
+    .imageSubresource = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .mipLevel = <span style="color: rgb(108, 182, 255);">0</span>,
+        .baseArrayLayer = <span style="color: rgb(108, 182, 255);">0</span>,
+        .layerCount = <span style="color: rgb(108, 182, 255);">1</span>,
+    },
+    .imageOffset = { mouseX, mouseY, <span style="color: rgb(108, 182, 255);">0</span> },
+    .imageExtent = { <span style="color: rgb(108, 182, 255);">1</span>, <span style="color: rgb(108, 182, 255);">1</span>, <span style="color: rgb(108, 182, 255);">1</span> },
+};
+</code></pre>
+
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(244, 112, 103);">uint16_t</span>* pixel;
+<span style="color: rgb(246, 157, 80);">vkMapMemory</span>(device, bufferMemory, <span style="color: rgb(108, 182, 255);">0</span>, <span style="color: rgb(108, 182, 255);">2</span>, <span style="color: rgb(108, 182, 255);">0</span>, (<span style="color: rgb(244, 112, 103);">void</span>**)&amp;pixel);
+
+<span style="color: rgb(244, 112, 103);">uint16_t</span> value = pixel[<span style="color: rgb(108, 182, 255);">0</span>];
+
+<span style="color: rgb(246, 157, 80);">vkUnmapMemory</span>(device, bufferMemory);</code></pre>
+
+        <p>But wait... now I should <span class="bad-highlight">wait</span> for the frame the finish before reading the
+          pixel, which beats the scope of
+          <span class="highlight">Vulkan's asynchronous CPU/GPU execution model</span>, because I <span
+            class="bad-highlight">stall CPU</span> while waiting for the GPU.
+        </p>
+        <p> Tho the above statement is not fully valid, because I can save the image from the <span
+            class="highlight">previous frame</span>, and read
+          from it, but would use <span class="bad-highlight">double the memory</span>.</p>
+
+        <p>I hope you got the <span class="bad-highlight">mistake I made</span> earlier. While writing this I thought:
+          "Wait, I don't need to store the
+          entire ID image from the previous frame, I can just <span class="highlight">store the ID</span> of the entity
+          under the mouse."</p>
+
+        <p>So I scratched what I had planned and did the following:</p>
+
+        <h2 class="subsection-title">-> Solution</h2>
+
+        <p> I do everything the same as before, and use <span class="highlight">2 storage buffers</span>. One is used to
+          <span class="highlight">copy the ID in the current
+            frame</span>,
+          while the other <span class="highlight">stores the ID from the previous frame</span>, so I can read it on the
+          CPU without stalling. This
+          delay of 1 frame won't even be visible
+        </p>
+        </p>
+        <p>After the render pass is done, I set a
+          barrier, so I read can transfer data from the image only after rendering is done:</p>
+
+        <pre
+          style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);">VkImageMemoryBarrier barrier{};
+barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+barrier.oldLayout                       = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+barrier.newLayout                       = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
+barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
+barrier.image                           = idImage;
+barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+barrier.subresourceRange.baseMipLevel   = <span style="color: rgb(108, 182, 255);">0</span>;
+barrier.subresourceRange.levelCount     = <span style="color: rgb(108, 182, 255);">1</span>;
+barrier.subresourceRange.baseArrayLayer = <span style="color: rgb(108, 182, 255);">0</span>;
+barrier.subresourceRange.layerCount     = <span style="color: rgb(108, 182, 255);">1</span>;
+barrier.srcAccessMask                   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+barrier.dstAccessMask                   = VK_ACCESS_TRANSFER_READ_BIT;
+
+<span style="color: rgb(246, 157, 80);">vkCmdPipelineBarrier</span>(cmdBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+VK_PIPELINE_STAGE_TRANSFER_BIT, <span style="color: rgb(108, 182, 255);">0</span>, <span style="color: rgb(108, 182, 255);">0</span>, <span style="color: rgb(108, 182, 255);">nullptr</span>, <span style="color: rgb(108, 182, 255);">0</span>, <span style="color: rgb(108, 182, 255);">nullptr</span>, <span style="color: rgb(108, 182, 255);">1</span>, &amp;barrier);</code></pre>
+        <p> Copy the pixel to the buffer:</p>
+
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);">VkBufferImageCopy region{};
+region.bufferOffset                    = <span style="color: rgb(108, 182, 255);">0</span>;
+region.bufferRowLength                 = <span style="color: rgb(108, 182, 255);">0</span>;
+region.bufferImageHeight               = <span style="color: rgb(108, 182, 255);">0</span>;
+region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+region.imageSubresource.mipLevel       = <span style="color: rgb(108, 182, 255);">0</span>;
+region.imageSubresource.baseArrayLayer = <span style="color: rgb(108, 182, 255);">0</span>;
+region.imageSubresource.layerCount     = <span style="color: rgb(108, 182, 255);">1</span>;
+region.imageOffset                     = { Mouse.x, Mouse.y, <span style="color: rgb(108, 182, 255);">0</span> };
+region.imageExtent                     = { <span style="color: rgb(108, 182, 255);">1</span>, <span style="color: rgb(108, 182, 255);">1</span>, <span style="color: rgb(108, 182, 255);">1</span> };
+
+<span style="color: rgb(246, 157, 80);">vkCmdCopyImageToBuffer</span>(cmdBuffer, idImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, 
+  pickBuffer[m_CurrentMouseIndex], <span style="color: rgb(108, 182, 255);">1</span>, &amp;region);</code></pre>
+
+        <p>I also need to increment the mouse index:</p>
+        <pre
+          style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);">m_CurrentMouseIndex = (m_CurrentMouseIndex + <span style="color: rgb(108, 182, 255);">1</span>) % <span style="color: rgb(108, 182, 255);">2</span>;</code></pre>
+
+        <p>On the CPU side, after recording the command buffer, read the pixel data from the buffer:</p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(244, 112, 103);">void</span>* data;
+<span style="color: rgb(246, 157, 80);">vkMapMemory</span>(device, pickBuffer[m_CurrentMouseIndex], <span style="color: rgb(108, 182, 255);">0</span>, <span style="color: rgb(246, 157, 80);">sizeof</span>(<span style="color: rgb(244, 112, 103);">uint32_t</span>), <span style="color: rgb(108, 182, 255);">0</span>, &amp;data);
+
+<span style="color: rgb(244, 112, 103);">uint32_t</span> id = INVALID_ID;
+std::<span style="color: rgb(246, 157, 80);">memcpy</span>(&amp;id, data, <span style="color: rgb(246, 157, 80);">sizeof</span>(<span style="color: rgb(244, 112, 103);">uint32_t</span>));
+
+<span style="color: rgb(246, 157, 80);">vkUnmapMemory</span>(device, pickBuffer[m_CurrentMouseIndex]);</code></pre>
+
+        <p>You see I am not using m_CurrentMouseIndex directly, that is because this operation <span
+            class="highlight">happens
+            after I increment</span> this index, so it now points to the previous frame buffer.</p>
+
+        <br>
+        <h2 class="section-title">RESULT</h2>
+        <hr />
+        <br>
+        <video controls width="950">
+          <source src="res/result.mp4" type="video/mp4">
+        </video>
+        <footer></footer>
+
+        <br>
+        <h2 class="section-title">SHORT EXTRA</h2>
+        <hr />
+        <p> My first idea was to hold a storage buffer for the ID, send it to the <span class="highlight">fragment
+            shader</span> and do something like:
+        </p>
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span style="color: rgb(246, 157, 80);">layout</span> (set = <span style="color: rgb(108, 182, 255);">2</span>, binding = <span style="color: rgb(108, 182, 255);">0</span>) buffer readonly RendererParameters
+{
+	vec3 lightColor;
+	<span style="color: rgb(244, 112, 103);">float</span> lightIntensity;
+	vec3 lightPosition;
+	vec3 viewPosition;
+} rendererParams;</code></pre>
+
+        <pre style="background: rgb(34, 39, 46);"><code style="display: block; overflow-x: auto; padding: 3px 5px; color: rgb(173, 186, 199); background: rgb(34, 39, 46);"><span><span style="color: rgb(244, 112, 103);">void</span> <span style="color: rgb(220, 189, 251);">main</span><span>()</span>
+</span>{
+	...
+    <span style="color: rgb(244, 112, 103);">if</span> (gl_FragCoord.x == Mouse.x &amp;&amp; gl_FragCoord.y == Mouse.y) {
+        uint old = <span style="color: rgb(246, 157, 80);">atomicMin</span>(Mouse.Depth, z);
+        <span style="color: rgb(244, 112, 103);">if</span> (z &lt;= old) {
+            Mouse.ID = Entity.ID;
+        }
+    
+}</code></pre>
+        <p>But I'm not really a big fan of adding <span class="bad-highlight">branching and atomics</span> in the
+          fragment shader.
+        </p>
+        <br>
+
+        <h2 class="section-title">APPENDIX</h2>
+        <br>
+      <hr />
+        <a class="link-article"
+          href="https://docs.vulkan.org/spec/latest/chapters/descriptorsets.html#descriptorsets-storagebufferdynamic">https://docs.vulkan.org/spec/latest/chapters/descriptorsets.html#descriptorsets-storagebufferdynamic</a>
+
+      </div>
+</body>
+
+</html>
